@@ -1,0 +1,10 @@
+# === Datacenter AAA === #
+[AAA]
+hostname1
+hostname4
+
+# === Datacenter ZZZ === #
+[ZZZ]
+hostname2
+HOstname3
+hostname5

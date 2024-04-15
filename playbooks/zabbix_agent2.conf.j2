@@ -1,0 +1,14 @@
+############ GENERAL PARAMETERS #################
+PidFile=/run/zabbix/zabbix_agent2.pid
+LogFile=/var/log/zabbix/zabbix_agent2.log
+LogFileSize=0
+
+Server="{{ zabbix_server_IP }}"
+ServerActive="{{ zabbix_server_IP }}"
+Hostname="{{ zabbix_server_IP }}"
+HostMetadataItem=system.uname
+
+Include=/etc/zabbix/zabbix_agent2.d/*.conf
+ControlSocket=/tmp/agent.sock
+
+Include=/etc/zabbix/zabbix_agent2.d/plugins.d/*.conf

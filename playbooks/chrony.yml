@@ -1,0 +1,35 @@
+---
+- hosts: "{{ target_hosts }}"
+  become: yes
+  tasks:
+    - name: Check if Chrony is installed
+      command: rpm -q chrony
+      register: chrony_status
+      changed_when: false
+      ignore_errors: yes
+    - name: Install chrony package
+      ansible.builtin.dnf:
+        name: chrony
+        state: present
+      when: chrony_status.rc != 0
+    - name: Determine NTP server based on datacenter
+      set_fact:
+        ntp_server: >-
+          {{
+            'lv.pool.ntp.org'
+            if target_hosts == 'AAA'
+            else 'lt.pool.ntp.org'
+            if target_hosts == 'ZZZ'
+            else 'es.pool.ntp.org'
+          }}
+    - name: Configure chrony
+      template:
+        src: chrony.conf.j2
+        dest: /etc/chrony.conf
+      vars:
+        ntp_server: "{{ ntp_server }}"
+    - name: Start and enable chrony service
+      systemd:
+        name: chronyd
+        enabled: yes
+        state: started

@@ -1,0 +1,20 @@
+---
+- name: Add new user with sudo rights
+  hosts: "{{ target_hosts }}"
+  become: yes
+  tasks:
+    - name: Check if such user already exists
+      command: id -u {{ user_name }}
+      register: user_exists
+      ignore_errors: yes
+    - name: Create new user if didn't exist
+      user:
+        name: "{{ user_name }}"
+        state: present
+        createhome: yes
+      when:: user_exists.rc != 0
+    - name: Grant user sudo rights
+      lineinfile:
+        path: /etc/sudoers
+        regexp: '^"{{ user_name }}"'
+        line: '"{{ user_name }}" ALL=(ALL:ALL) NOPASSWD:ALL'
